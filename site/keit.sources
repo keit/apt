@@ -1,0 +1,5 @@
+Types: deb
+URIs: https://keit.github.io/apt
+Suites: stable
+Components: main
+Signed-By: /usr/share/keyrings/keit.gpg

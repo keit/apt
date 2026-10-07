@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>keit APT repository</title>
+  <meta name="description" content="APT repository for Kei Takashima's (ZL2MIM) Linux apps, for Debian, Ubuntu and Raspberry Pi OS.">
+  <style>
+    :root { --bg: #fbfaf8; --text: #1d2125; --muted: #5b6470; --border: #e2e0db; --code: #f2f1ee; --accent: #1f6feb; color-scheme: light; }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #15181c; --text: #e6e8eb; --muted: #9aa3ad; --border: #2d333a; --code: #22272e; --accent: #4c94ff; color-scheme: dark; }
+    }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Ubuntu, sans-serif; }
+    main { max-width: 780px; margin: 0 auto; padding: 24px 16px 48px; }
+    h1 { font-size: 1.8rem; margin: 0 0 4px; }
+    h2 { font-size: 1.3rem; margin-top: 36px; padding-top: 8px; border-top: 1px solid var(--border); }
+    .lead { color: var(--muted); margin-top: 0; }
+    a { color: var(--accent); }
+    code, pre { font-family: ui-monospace, "Ubuntu Mono", Menlo, monospace; font-size: 0.9em; }
+    code { background: var(--code); padding: 1px 5px; border-radius: 4px; }
+    pre { background: var(--code); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; overflow-x: auto; }
+    pre code { background: none; padding: 0; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { color: var(--muted); font-weight: 600; }
+    .fpr { font-family: ui-monospace, "Ubuntu Mono", Menlo, monospace; word-break: break-all; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>keit APT repository</h1>
+    <p class="lead">Linux apps by Kei Takashima (ZL2MIM), for Debian 12 or newer, Ubuntu 24.04 or newer
+      and Raspberry Pi OS (64-bit). PCs (amd64) and Raspberry Pi (arm64).</p>
+
+    <h2>Set up (once)</h2>
+<pre><code>sudo curl -fsSLo /usr/share/keyrings/keit.gpg https://keit.github.io/apt/keit.gpg
+sudo curl -fsSLo /etc/apt/sources.list.d/keit.sources https://keit.github.io/apt/keit.sources
+sudo apt update</code></pre>
+    <p>Then install any package below, e.g. <code>sudo apt install dv3kclient</code>. New versions
+      arrive with your normal system updates.</p>
+
+    <h2>Packages</h2>
+    <table>
+      <thead><tr><th>Package</th><th>Version</th><th>Description</th></tr></thead>
+      <tbody>
+<!-- PACKAGES -->
+      </tbody>
+    </table>
+
+    <h2>Signing key</h2>
+    <p>Fingerprint:</p>
+    <p class="fpr">2F13 9F75 C569 FA77 1904 732E E594 4DBB D89D D18E</p>
+    <p>To check the key you downloaded:
+      <code>gpg --show-keys /usr/share/keyrings/keit.gpg</code></p>
+
+    <h2>Remove</h2>
+<pre><code>sudo rm /etc/apt/sources.list.d/keit.sources /usr/share/keyrings/keit.gpg
+sudo apt update</code></pre>
+
+    <h2 lang="ja">日本語</h2>
+    <div lang="ja">
+      <p>Kei Takashima(ZL2MIM)の Linux アプリ用の APT リポジトリです。Debian 12 以降、Ubuntu 24.04 以降、Raspberry Pi OS(64 ビット)に対応しています。最初に一度だけ、上の「Set up」のコマンドで署名鍵とリポジトリを登録してください。その後は <code>sudo apt install dv3kclient</code> のようにインストールでき、新しいバージョンは通常のシステム更新で届きます。</p>
+    </div>
+
+    <p class="lead">Source: <a href="https://github.com/keit/apt">github.com/keit/apt</a></p>
+  </main>
+</body>
+</html>

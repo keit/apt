@@ -1,0 +1,93 @@
+# Rebuilds the APT repository from the latest published release of every
+# app in apps.txt, signs it, publishes it to GitHub Pages, then installs
+# from the live repository on clean images to prove it works.
+#
+# Runs every 6 hours, on pushes to main, and by hand:
+#   gh workflow run -R keit/apt publish.yml
+name: Publish
+
+on:
+  schedule:
+    - cron: '17 */6 * * *'
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install tools
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends apt-utils
+
+      - name: Import the signing key
+        env:
+          APT_SIGNING_KEY: ${{ secrets.APT_SIGNING_KEY }}
+        run: |
+          if [ -z "$APT_SIGNING_KEY" ]; then
+            echo "::error::The APT_SIGNING_KEY secret isn't set (see ~/apt_key/README.txt)"
+            exit 1
+          fi
+          echo "$APT_SIGNING_KEY" | gpg --batch --import
+
+      - name: Build the repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: ./build-repo.sh public
+
+      # The same check apt makes: InRelease must verify against the public
+      # key users install.
+      - name: Verify the signature
+        run: gpgv --keyring ./keit.gpg public/dists/stable/InRelease
+
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
+
+  # Follows the set-up steps on the repository's page exactly.
+  test:
+    needs: deploy
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { runner: ubuntu-24.04, image: 'debian:bookworm' }
+          - { runner: ubuntu-24.04, image: 'debian:trixie' }
+          - { runner: ubuntu-24.04, image: 'ubuntu:24.04' }
+          - { runner: ubuntu-24.04-arm, image: 'debian:trixie' }
+    name: test (${{ matrix.image }}, ${{ matrix.runner }})
+    runs-on: ${{ matrix.runner }}
+    container: ${{ matrix.image }}
+    steps:
+      - name: Install from the repository
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends curl ca-certificates
+          curl -fsSLo /usr/share/keyrings/keit.gpg https://keit.github.io/apt/keit.gpg
+          curl -fsSLo /etc/apt/sources.list.d/keit.sources https://keit.github.io/apt/keit.sources
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y dv3kclient
+          dv3kclient --version

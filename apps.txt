@@ -1,0 +1,3 @@
+# GitHub repositories whose latest published release's .deb files go into
+# the repository. One per line.
+keit/DV3000Client
